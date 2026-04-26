@@ -96,7 +96,7 @@ export const tasksSlice = createAppsSlice({
 
 
     changeTaskStatusTC: create.asyncThunk(
-      async (task:DomainTask, { rejectWithValue,getState ,dispatch}) => {
+      async (task:DomainTask, { rejectWithValue ,dispatch}) => {
    /*     const model: UpdateTaskModel = {
           description: task.description,
           title: task.title,

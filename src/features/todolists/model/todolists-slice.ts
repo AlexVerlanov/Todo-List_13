@@ -155,7 +155,7 @@ export const todolistsSlice = createAppsSlice({
 )*/
 
 export const todolistsReducer = todolistsSlice.reducer
-export const { selectTodolists } = todolistsSlice.selectors
+export const { selectTodolists: selectTodolist } = todolistsSlice.selectors
 export const { deleteTodolistAC,
   changeTodolistFilterAC,fetchTodolistsTC,
   createTodolistTC,changeTodolistTitleTC,deleteTodolistTC
