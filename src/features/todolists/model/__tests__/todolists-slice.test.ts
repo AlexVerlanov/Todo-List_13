@@ -4,9 +4,10 @@ import {
   changeTodolistFilterAC,
   changeTodolistTitleTC,
   createTodolistTC,
-  deleteTodolistAC,
+
   todolistsReducer,
   type DomainTodolist,
+  deleteTodolistTC,
 } from "../todolists-slice.ts"
 
 let todolistId1: string
@@ -18,27 +19,19 @@ beforeEach(() => {
   todolistId2 = nanoid()
 
   startState = [
-    {
-      id: todolistId1,
-      title: "What to learn",
-      filter: "all",
-      addedDate: "",
-      order: 0,
-    },
-    {
-      id: todolistId2,
-      title: "What to buy",
-      filter: "all",
-      addedDate: "",
-      order: 0,
-    },
+    { id: todolistId1, title: 'What to learn', addedDate: '', order: 0, filter: 'all' },
+    { id: todolistId2, title: 'What to buy', addedDate: '', order: 0, filter: 'all' },
   ]
 })
 
-test("correct todolist should be deleted", () => {
+test('correct todolist should be deleted', () => {
   const endState = todolistsReducer(
     startState,
-    deleteTodolistAC({ id: todolistId1 })
+    deleteTodolistTC.fulfilled(
+      { id: todolistId1 },
+      "requestId",
+      { id: todolistId1 }
+    )
   )
 
   expect(endState.length).toBe(1)
@@ -57,7 +50,11 @@ test("correct todolist should be created", () => {
 
   const endState = todolistsReducer(
     startState,
-    createTodolistTC.fulfilled(newTodolist, "", title)
+    createTodolistTC.fulfilled(
+      newTodolist,
+      "requestId",
+      { title },
+    ),
   )
 
   expect(endState.length).toBe(3)
