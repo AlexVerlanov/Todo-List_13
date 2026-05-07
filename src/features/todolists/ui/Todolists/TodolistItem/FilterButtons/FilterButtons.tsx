@@ -13,7 +13,7 @@ type Props = {
 }
 
 export const FilterButtons = ({ todolist }: Props) => {
-  const { id, filter } = todolist
+  const { id, filter, } = todolist
 
   const dispatch = useAppDispatch()
   const changeFilter = (filter: FilterValues) => {
@@ -21,7 +21,7 @@ export const FilterButtons = ({ todolist }: Props) => {
   }
 
   return (
-    <Box sx={containerSx}>
+    <Box sx={containerSx} >
       <Button variant={filter === "all" ? "outlined" : "text"} color={"inherit"} onClick={() => changeFilter("all")}>
         All
       </Button>

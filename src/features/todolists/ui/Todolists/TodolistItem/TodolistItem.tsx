@@ -5,9 +5,11 @@ import { DomainTodolist } from "@/features/todolists/model/todolists-slice.ts"
 import { Tasks } from "./Tasks/Tasks"
 import { TodolistTitle } from "./TodolistTitle/TodolistTitle"
 import { CreateItemForm } from "@/common/components/CreateItemForm/CreateItemForm"
+import { RequestStatus } from "@/common/types"
 
 type Props = {
   todolist: DomainTodolist
+  entityStatus: RequestStatus
 }
 
 export const TodolistItem = ({ todolist }: Props) => {
@@ -20,8 +22,9 @@ export const TodolistItem = ({ todolist }: Props) => {
   return (
     <div>
       <TodolistTitle todolist={todolist} />
-      <CreateItemForm onCreateItem={createTask} />
-      <Tasks todolist={todolist} />
+      {/*NEED*/}
+      <CreateItemForm onCreateItem={createTask}  entityStatus={todolist.entityStatus} />
+      <Tasks todolist={todolist} entityStatus={todolist.entityStatus} />
       <FilterButtons todolist={todolist} />
     </div>
   )

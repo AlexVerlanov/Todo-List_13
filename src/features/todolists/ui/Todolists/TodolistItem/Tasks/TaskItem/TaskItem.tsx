@@ -1,8 +1,6 @@
 import { EditableSpan } from "@/common/components/EditableSpan/EditableSpan"
 import { useAppDispatch } from "@/common/hooks"
 import {
-  changeTaskStatusTC,
-  changeTaskTitleTC,
   deleteTaskTC,
   updateTaskTC,
 } from "@/features/todolists/model/tasks-slice.ts"
@@ -14,13 +12,15 @@ import type { ChangeEvent } from "react"
 import { getListItemSx } from "./TaskItem.styles"
 import { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
 import { TaskStatus } from "@/common/enums"
+import { RequestStatus } from "@/common/types"
 
 type Props = {
   task: DomainTask
   todolistId: string
+  entityStatus: RequestStatus
 }
 
-export const TaskItem = ({ task, todolistId }: Props) => {
+export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
   const dispatch = useAppDispatch()
 
   const deleteTask = () => {
@@ -59,11 +59,11 @@ export const TaskItem = ({ task, todolistId }: Props) => {
   return (
     <ListItem sx={getListItemSx(checked)}>
       <div>
-        <Checkbox checked={checked} onChange={changeTaskStatus} />
+        <Checkbox checked={checked} onChange={changeTaskStatus} disabled={entityStatus === 'loading'}/>
         <EditableSpan value={task.title} onChange={changeTaskTitle} />
       </div>
-      <IconButton onClick={deleteTask}>
-        <DeleteIcon />
+      <IconButton onClick={deleteTask} disabled={entityStatus === 'loading'}>
+        <DeleteIcon  />
       </IconButton>
     </ListItem>
   )
