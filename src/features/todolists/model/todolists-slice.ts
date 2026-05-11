@@ -1,8 +1,11 @@
 import { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import { createAppsSlice } from "@/common/utils/createAppslice.ts"
-import { changeStatusAC } from "@/app/app-reducer.ts"
+import { changeStatusAC, setAppErrorAc } from "@/app/appSlice.ts"
 import { RequestStatus } from "@/common/types"
+import { ResultCodeObj } from "@/common/enums"
+import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
+import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
 
 
 export type FilterValues = "all" | "active" | "completed"
@@ -65,11 +68,21 @@ export const todolistsSlice = createAppsSlice({
         try {
           dispatch(changeStatusAC({status:'loading'}))
           const res = await todolistsApi.createTodolist(args.title)
-          dispatch(changeStatusAC({status:'succeeded'}))
-          return res.data.data.item
+          if(res.data.resultCode === ResultCodeObj.Success){
+            dispatch(changeStatusAC({status:'succeeded'}))
+            return res.data.data.item
+          }else  {
+            const error = res.data.messages.length ? res.data.messages[0] : "something went wrong"
+            dispatch (setAppErrorAc({error}))
+            dispatch(changeStatusAC({status:'failed'}))
+            return rejectWithValue(null)
+          }
+
 
         } catch (error) {
           dispatch(changeStatusAC({status:'failed'}))
+          dispatch(setAppErrorAc({ error: "network error"}),
+          )
           return rejectWithValue(null)
         }
         },
@@ -81,29 +94,48 @@ export const todolistsSlice = createAppsSlice({
       ),
 
 
-    changeTodolistTitleTC:create.asyncThunk(
-      async (arg:{id:string,title:string},{rejectWithValue,dispatch})=>{
-        try {
-          dispatch(changeStatusAC({status:'loading'}))
-          await  todolistsApi.changeTodolistTitle(arg)
-          dispatch(changeStatusAC({status:'succeeded'}))
-          return arg
-        }catch(err){
-          dispatch(changeStatusAC({status:'failed'}))
 
-          return rejectWithValue(err)
-        }
+changeTodolistTitleTC: create.asyncThunk(
+  async (
+    arg: { id: string; title: string },
+    { rejectWithValue, dispatch },
+  ) => {
+    try {
+      dispatch(changeStatusAC({ status: "loading" }))
 
-      },
-      {
-        fulfilled:(state, action)=>{
-          const index = state.findIndex((todolist) => todolist.id === action.payload.id)
-          if (index !== -1) {
-            state[index].title = action.payload.title
+      const res = await todolistsApi.changeTodolistTitle(arg)
+
+      if (res.data.resultCode === ResultCodeObj.Success) {
+        dispatch(changeStatusAC({ status: "succeeded" }))
+
+        return {
+          id: arg.id,
+          title: arg.title,
         }
+      } else {
+        handleServerAppError(res.data, dispatch)
+
+        return rejectWithValue(null)
       }
+    } catch (error: any) {
+      handleServerNetworkError(error, dispatch)
+
+      return rejectWithValue(null)
+    }
+  },
+
+  {
+    fulfilled: (state, action) => {
+      const todolist = state.find(
+        (todolist) => todolist.id === action.payload.id,
+      )
+
+      if (todolist) {
+        todolist.title = action.payload.title
       }
-    ),
+    },
+  },
+),
 
     deleteTodolistTC:create.asyncThunk(
       async (args:{ id: string },{rejectWithValue,dispatch})=>{

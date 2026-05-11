@@ -1,31 +1,30 @@
 import Snackbar, { SnackbarCloseReason } from '@mui/material/Snackbar';
 import Alert from "@mui/material/Alert"
-import { SyntheticEvent, useState } from "react"
+import { SyntheticEvent } from "react"
+import { useDispatch, useSelector } from "react-redux"
+import { selectAppError, setAppErrorAc } from "@/app/appSlice.ts"
 
 export const  ErrorSnackBar = ()=> {
-  const [open, setOpen] = useState(false);
-
-
+  const error = useSelector(selectAppError)
+  const dispatch = useDispatch()
   const handleClose = (
     _event?: SyntheticEvent | Event,
     reason?: SnackbarCloseReason,
   ) => {
-    if (reason === 'clickaway') {
-      return;
-    }
-
-    setOpen(false);
+    if (reason === 'clickaway')  return;
+    // setOpen(false);
+    dispatch(setAppErrorAc({error:null}))
   };
 
   return (
-      <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={error !== null} autoHideDuration={6000} onClose={handleClose}>
         <Alert
           onClose={handleClose}
-          severity="success"
+          severity="error"
           variant="filled"
           sx={{ width: '100%' }}
         >
-          This is a Error Alert inside a Snackbar!
+          {error}
         </Alert>
       </Snackbar>
   );

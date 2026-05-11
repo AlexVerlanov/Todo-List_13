@@ -18,6 +18,7 @@ type Props = {
   task: DomainTask
   todolistId: string
   entityStatus: RequestStatus
+
 }
 
 export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
