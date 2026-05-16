@@ -1,14 +1,16 @@
 import TextField from "@mui/material/TextField"
 import { type ChangeEvent, useState } from "react"
+import { RequestStatus } from "@/common/types"
 
 
 type Props = {
   value: string
   onChange: (title: string) => void
-  error: string | undefined
+  error?: string | undefined
+  entityStatus?: RequestStatus
 }
 
-export const EditableSpan = ({ value, onChange }: Props) => {
+export const EditableSpan = ({ value, onChange,entityStatus = 'idle'  }: Props) => {
   const [title, setTitle] = useState(value)
   const [isEditMode, setIsEditMode] = useState(false)
 
@@ -37,6 +39,7 @@ export const EditableSpan = ({ value, onChange }: Props) => {
           onChange={changeTitle}
           onBlur={turnOffEditMode}
           autoFocus
+          disabled={entityStatus === 'loading'}
         />
       ) : (
         <span onDoubleClick={turnOnEditMode}>{value}</span>

@@ -58,6 +58,7 @@ export const tasksSlice = createAppsSlice({
           }
 
         } catch (error:any) {
+          debugger
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
 

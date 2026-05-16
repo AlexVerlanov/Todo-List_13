@@ -1,7 +1,7 @@
 import { Todolist } from "@/features/todolists/api/todolistsApi.types.ts"
 import { todolistsApi } from "@/features/todolists/api/todolistsApi.ts"
 import { createAppsSlice } from "@/common/utils/createAppslice.ts"
-import { changeStatusAC, setAppErrorAc } from "@/app/appSlice.ts"
+import { changeStatusAC } from "@/app/appSlice.ts"
 import { RequestStatus } from "@/common/types"
 import { ResultCodeObj } from "@/common/enums"
 import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
@@ -72,17 +72,14 @@ export const todolistsSlice = createAppsSlice({
             dispatch(changeStatusAC({status:'succeeded'}))
             return res.data.data.item
           }else  {
-            const error = res.data.messages.length ? res.data.messages[0] : "something went wrong"
-            dispatch (setAppErrorAc({error}))
-            dispatch(changeStatusAC({status:'failed'}))
+            // const error = res.data.messages.length ? res.data.messages[0] : "something went wrong"
+            handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
 
 
         } catch (error) {
-          dispatch(changeStatusAC({status:'failed'}))
-          dispatch(setAppErrorAc({ error: "network error"}),
-          )
+          handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
         },
