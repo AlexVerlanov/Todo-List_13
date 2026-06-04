@@ -8,6 +8,7 @@ import { ResultCodeObj, TaskStatus } from "@/common/enums"
 import { changeStatusAC } from "@/app/appSlice.ts"
 import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
 import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
+import { DomainTaskSchema } from "@/features/auth/model/schema.ts"
 
 export type Task = {
   id: string
@@ -29,12 +30,15 @@ export const tasksSlice = createAppsSlice({
   },
   reducers: (create) => ({
     fetchTasks: create.asyncThunk(
-      async (todolistId: string, { rejectWithValue }) => {
+      async (todolistId: string, { rejectWithValue,dispatch }) => {
         try {
+          dispatch(changeStatusAC({status:'loading'}))
           const res = await tasksApi.getTasks(todolistId)
-
+          DomainTaskSchema.array().parse((res.data.items))
+          dispatch(changeStatusAC({status:'succeeded'}))
           return { tasks: res.data.items, todolistId }
         } catch (error) {
+          handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
         }
       },
@@ -191,18 +195,11 @@ export const tasksSlice = createAppsSlice({
         },
       },
     ),
-    /*changeTaskTitleTC changeTaskStatusTC.*/
+
 
     changeTaskStatusTC: create.asyncThunk(
       async (task:DomainTask, { rejectWithValue ,dispatch}) => {
-   /*     const model: UpdateTaskModel = {
-          description: task.description,
-          title: task.title,
-          status: task.status,
-          priority: task.priority,
-          startDate: task.startDate,
-          deadline: task.deadline,
-        }*/
+
         try {
           dispatch(changeStatusAC({status:'loading'}))
           const res = await tasksApi.updateTask(task)
@@ -230,17 +227,7 @@ export const tasksSlice = createAppsSlice({
       }
     }),
 
-  /*  changeTaskTitleAC: create.reducer<{
-      todolistId: string
-      taskId: string
-      title: string
-    }>((state, action) => {
-      const task = state[action.payload.todolistId]?.find((task) => task.id === action.payload.taskId)
 
-      if (task) {
-        task.title = action.payload.title
-      }
-    }),*/
   }),
 
   extraReducers: (builder) => {
@@ -254,17 +241,24 @@ export const tasksSlice = createAppsSlice({
   },
 })
 
+const EMPTY_TASKS: Task[] = []
+
+const selectTasksById = (state: TasksState, todolistId: string) =>
+  state[todolistId] ?? EMPTY_TASKS
+
 const selectFilteredTasksBase = createSelector(
   [
-    (state: TasksState, todolistId: string) => state[todolistId] ?? [],
+    selectTasksById,
     (_state: TasksState, _todolistId: string, filter: FilterValues) => filter,
   ],
   (tasks, filter) => {
     switch (filter) {
       case "active":
         return tasks.filter((task) => task.status === TaskStatus.New)
+
       case "completed":
         return tasks.filter((task) => task.status === TaskStatus.Completed)
+
       default:
         return tasks
     }

@@ -29,8 +29,8 @@ export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
   }
 
   const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {
-    const status = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
-    const newTask = {...task, status}
+    // const status = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
+    // const newTask = {...task, status}
     dispatch(
       updateTaskTC({
         todolistId,
@@ -62,6 +62,7 @@ export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
       <div>
         <Checkbox checked={checked} onChange={changeTaskStatus} disabled={entityStatus === 'loading'}/>
         <EditableSpan value={task.title} onChange={changeTaskTitle} />
+        <span style={{fontSize:"12px", marginLeft: "10px",    color: "orange",}}>{new Date(task.addedDate).toLocaleDateString()}</span>
       </div>
       <IconButton onClick={deleteTask} disabled={entityStatus === 'loading'}>
         <DeleteIcon  />

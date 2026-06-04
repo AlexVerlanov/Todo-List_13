@@ -17,9 +17,9 @@ export const Tasks = ({ todolist }: Props) => {
   const { id,entityStatus  } = todolist
     const dispatch = useAppDispatch()
 
-   useEffect(() => {
-     dispatch(fetchTasks(id))
-   }, [])
+  useEffect(() => {
+    dispatch(fetchTasks(id))
+  }, [dispatch, id])
   const filteredTasks = useAppSelector((state) =>
     selectFilteredTasks(state, todolist.id, todolist.filter)
   )

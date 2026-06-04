@@ -1,9 +1,4 @@
-import { RequestStatus } from "@/common/types"
+import { z } from "zod"
+import { todolistSchema } from "./schema"
 
-export type Todolist = {
-  id: string
-  title: string
-  addedDate: string
-  order: number
-  entityStatus:RequestStatus
-}
+export type Todolist = z.infer<typeof todolistSchema>

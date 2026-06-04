@@ -6,6 +6,8 @@ import { RequestStatus } from "@/common/types"
 import { ResultCodeObj } from "@/common/enums"
 import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
 import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
+import { todolistSchema } from "@/features/todolists/api/schema.ts"
+import * as z from "zod"
 
 
 export type FilterValues = "all" | "active" | "completed"
@@ -50,7 +52,10 @@ export const todolistsSlice = createAppsSlice({
     fetchTodolistsTC: create.asyncThunk(async (_arg,thunkAPI)=>{
         try {
           const res = await todolistsApi.getTodolists()
-          return { todolists: res.data }
+
+          const todolists = z.array(todolistSchema).parse(res.data)
+
+          return { todolists }
         } catch (error) {
           return thunkAPI.rejectWithValue(null)
         }

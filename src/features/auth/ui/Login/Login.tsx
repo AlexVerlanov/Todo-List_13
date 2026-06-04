@@ -1,4 +1,4 @@
-import { useAppSelector } from "@/common/hooks"
+import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
 import Button from '@mui/material/Button'
 import Checkbox from '@mui/material/Checkbox'
@@ -10,23 +10,24 @@ import Grid from "@mui/material/Grid2"
 import TextField from '@mui/material/TextField'
 import { selectThemeMode } from "@/app/appSlice.ts"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
-import * as z from "zod"
+
 import { zodResolver } from "@hookform/resolvers/zod"
-import { LoginInputs } from "@/features/auth/model/types.ts"
+import { LoginInputs, loginSchema } from "@/features/auth/model/shema.ts"
+import { loginTC, selectIsLoggedIn } from "@/features/model/auth-slice.ts"
+import { Navigate, useNavigate } from "react-router"
+import { Path } from "@/common/routing/Routing.tsx"
+import { useEffect } from "react"
 
-
-
-
-const LoginSchema = z.object({
-  email: z.string().email("Incorrect email"),
-  password:z.string().min(3, 'Das Passwort muss länger als 3 Zeichen sein.'),
-  rememberMe:z.boolean(),
-})
 
 
 export const Login = () => {
   console.log('Login')
   const themeMode = useAppSelector(selectThemeMode)
+  const isLoggedIn = useAppSelector(selectIsLoggedIn)
+
+  const   dispatch  = useAppDispatch()
+
+  let navigate = useNavigate()
 
   const theme = getTheme(themeMode)
 
@@ -34,19 +35,32 @@ export const Login = () => {
 
 
     useForm<LoginInputs>({
-      resolver: zodResolver(LoginSchema),
+      resolver: zodResolver(loginSchema),
       defaultValues: {
-        email: "",
-        password: "",
+        email: "alexverlanov2020@gmail.com",
+        password: "123",
         rememberMe: false,
       },
     })
 
 
   const onSubmit : SubmitHandler<LoginInputs> = (data) => {
-    console.log( data)
-    reset()
+    dispatch(loginTC(data))
+  /*    .unwrap()
+      .then(()=>{
+      debugger
+      navigate(Path.Main)
+        reset()
+    })*/
   }
+  // useEffect(() => {
+  //   if (isLoggedIn){
+  //     navigate(Path.Main)
+  //   }
+  // },[isLoggedIn])
+  if (isLoggedIn){
+   return <Navigate to={Path.Main}/>
+     }
   return (
     <Grid container justifyContent={'center'}>
       <FormControl>
