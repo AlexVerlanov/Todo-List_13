@@ -9,6 +9,7 @@ import { changeStatusAC } from "@/app/appSlice.ts"
 import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
 import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
 import { DomainTaskSchema } from "@/features/auth/model/schema.ts"
+import { clearDataAC } from "@/common/actions"
 
 export type Task = {
   id: string
@@ -28,6 +29,7 @@ export const tasksSlice = createAppsSlice({
 
     selectTasksByTodolistId: (state, todolistId: string) => state[todolistId] ?? [],
   },
+
   reducers: (create) => ({
     fetchTasks: create.asyncThunk(
       async (todolistId: string, { rejectWithValue,dispatch }) => {
@@ -232,6 +234,9 @@ export const tasksSlice = createAppsSlice({
 
   extraReducers: (builder) => {
     builder
+      .addCase(clearDataAC, () => {
+        return {}
+      })
       .addCase(createTodolistTC.fulfilled, (state, action) => {
         state[action.payload.id] = []
       })

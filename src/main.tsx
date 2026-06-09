@@ -7,7 +7,7 @@ import { BrowserRouter } from "react-router"
 
 createRoot(document.getElementById("root")!).render(
   <Provider store={store}>
-    <BrowserRouter basename="/Todo-List_13">
+    <BrowserRouter basename={import.meta.env.PROD ? "/Todo-List_13" : "/"}>
       <App />
     </BrowserRouter>
 

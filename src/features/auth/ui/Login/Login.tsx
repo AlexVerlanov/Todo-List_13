@@ -13,10 +13,10 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form"
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { LoginInputs, loginSchema } from "@/features/auth/model/shema.ts"
-import { loginTC, selectIsLoggedIn } from "@/features/model/auth-slice.ts"
+import { loginTC, meTC, selectIsLoggedIn } from "@/features/model/auth-slice.ts"
 import { Navigate, useNavigate } from "react-router"
 import { Path } from "@/common/routing/Routing.tsx"
-import { useEffect } from "react"
+
 
 
 
@@ -46,21 +46,16 @@ export const Login = () => {
 
   const onSubmit : SubmitHandler<LoginInputs> = (data) => {
     dispatch(loginTC(data))
-  /*    .unwrap()
-      .then(()=>{
-      debugger
-      navigate(Path.Main)
-        reset()
-    })*/
+      .unwrap()
+      .then(() => {
+        dispatch(meTC())
+      })
+
   }
-  // useEffect(() => {
-  //   if (isLoggedIn){
-  //     navigate(Path.Main)
-  //   }
-  // },[isLoggedIn])
-  if (isLoggedIn){
-   return <Navigate to={Path.Main}/>
-     }
+
+  // if (isLoggedIn){
+  //  return <Navigate to={Path.Main}/>
+  //    }
   return (
     <Grid container justifyContent={'center'}>
       <FormControl>

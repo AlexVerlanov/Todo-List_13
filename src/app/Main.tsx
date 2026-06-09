@@ -1,4 +1,4 @@
-import { useAppDispatch } from "@/common/hooks"
+import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { CreateItemForm } from "@/common/components/CreateItemForm/CreateItemForm"
 import { createTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
 import { Todolists } from "@/features/todolists/ui/Todolists/Todolists"
@@ -7,11 +7,26 @@ import Grid from "@mui/material/Grid2"
 
 export const Main = () => {
   const dispatch = useAppDispatch()
+  // const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
   const createTodolist = (title: string) => {
     dispatch(createTodolistTC({ title }))
   }
 
+  // const navigate = useNavigate()
+
+
+  // useEffect(() => {
+  //   if (!isLoggedIn){
+  //     navigate(Path.Login)
+  //   }
+  // },[isLoggedIn])
+
+
+
+  // if (!isLoggedIn){
+  //   return <Navigate to={Path.Login}/>
+  // }
   return (
     <Container maxWidth={"lg"}>
       <Grid container sx={{ mb: "30px" }}>

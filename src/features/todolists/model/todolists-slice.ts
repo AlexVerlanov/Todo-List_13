@@ -8,6 +8,7 @@ import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
 import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
 import { todolistSchema } from "@/features/todolists/api/schema.ts"
 import * as z from "zod"
+import { clearDataAC } from "@/common/actions"
 
 
 export type FilterValues = "all" | "active" | "completed"
@@ -26,8 +27,13 @@ export const todolistsSlice = createAppsSlice({
   selectors: {
     selectTodolists: (state) => state,
   },
-
+  extraReducers: (builder) => {
+    builder.addCase(clearDataAC, () => {
+      return []
+    })
+  },
   reducers: (create) => ({
+
 
     deleteTodolistAC: create.reducer<{ id: string }>((state, action) => {
       const index = state.findIndex((todolist) => todolist.id === action.payload.id)
