@@ -1,8 +1,44 @@
 import { instance } from "@/common/instance"
 import type { BaseResponse } from "@/common/types"
 import type { Todolist } from "./todolistsApi.types"
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react"
+import { AUTH_TOKEN } from "@/common/constants"
 
-export const todolistsApi = {
+
+
+
+
+
+
+export const todolistsApi = createApi({
+  // `reducerPath` - имя `slice`, куда будут сохранены состояние и экшены для этого `API`
+  reducerPath: 'todolistsApi',
+  // `baseQuery` - конфигурация для `HTTP-клиента`, который будет использоваться для отправки запросов
+  baseQuery: fetchBaseQuery({
+    baseUrl: import.meta.env.VITE_BASE_URL,
+    headers: {
+      'API-KEY': import.meta.env.VITE_API_KEY,
+    },
+    prepareHeaders: headers => {
+      headers.set('Authorization', `Bearer ${localStorage.getItem(AUTH_TOKEN)}`)
+    },
+  }),
+  // `endpoints` - метод, возвращающий объект с эндпоинтами для `API`, описанными
+  // с помощью функций, которые будут вызываться при вызове соответствующих методов `API`
+  // (например `get`, `post`, `put`, `patch`, `delete`)
+  endpoints: build => ({
+    // Типизация аргументов (<возвращаемый тип, тип query аргументов (`QueryArg`)>)
+    // `query` по умолчанию создает запрос `get` и указание метода необязательно
+    getTodolists: build.query<any[], void>({
+      query: () => 'todo-lists',
+    }),
+  }),
+})
+
+
+
+
+export const _todolistsApi = {
   getTodolists() {
     return instance.get<Todolist[]>("/todo-lists")
   },
@@ -17,3 +53,4 @@ export const todolistsApi = {
     return instance.delete<BaseResponse>(`/todo-lists/${id}`)
   },
 }
+export const { useGetTodolistsQuery } = todolistsApi
