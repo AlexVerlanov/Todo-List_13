@@ -1,16 +1,16 @@
-import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { CreateItemForm } from "@/common/components/CreateItemForm/CreateItemForm"
-import { createTodolistTC } from "@/features/todolists/model/todolists-slice.ts"
 import { Todolists } from "@/features/todolists/ui/Todolists/Todolists"
 import Container from "@mui/material/Container"
 import Grid from "@mui/material/Grid2"
+import { useCreateTodolistMutation } from "@/features/todolists/api/todolistsApi"
 
 export const Main = () => {
-  const dispatch = useAppDispatch()
-  // const isLoggedIn = useAppSelector(selectIsLoggedIn)
 
+     const [trigger, res] = useCreateTodolistMutation()
+  console.log(res)
   const createTodolist = (title: string) => {
-    dispatch(createTodolistTC({ title }))
+    trigger(title)
+    // dispatch(createTodolistTC({ title }))
   }
 
   // const navigate = useNavigate()
