@@ -1,8 +1,4 @@
-
-
-
 import { createAppsSlice } from "@/common/utils/createAppslice.ts"
-
 import { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
 import { LoginInputs } from "@/features/auth/model/shema.ts"
 import { changeStatusAC } from "@/app/appSlice.ts"
@@ -11,7 +7,6 @@ import { ResultCodeObj } from "@/common/enums"
 import { handleServerNetworkError } from "@/common/utils/handleServerNetworkError.ts"
 import { handleServerAppError } from "@/common/utils/handleServerAppError.ts"
 import { AUTH_TOKEN } from "@/common/constants"
-import { RootState } from "@/app/store.ts"
 import { clearDataAC } from "@/common/actions"
 
 export type Task = {
@@ -107,6 +102,13 @@ export const authSlice = createAppsSlice({
           const res = await authApi.me()
           if (res.data.resultCode === ResultCodeObj.Success){
             dispatch(changeStatusAC({status:'succeeded'}))
+            const res = await authApi.me()
+
+            debugger
+
+            // console.log(res)
+            // console.log(res.data)
+            // console.log(res.data.data)
             return {isLoggedIn: true,  login: res.data.data.login,}
 
           }else {

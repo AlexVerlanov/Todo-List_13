@@ -19,11 +19,9 @@ export const todolistsApi = createApi({
     },
     prepareHeaders: (headers) => {
       const token = localStorage.getItem(AUTH_TOKEN)
-
       if (token) {
         headers.set("Authorization", `Bearer ${token}`)
       }
-
       return headers
     },
   }),
@@ -44,10 +42,16 @@ export const todolistsApi = createApi({
     createTodolist: builder.mutation<BaseResponse<{ item: Todolist, }>, string>({
       query: (title) => ({method: 'post', url:"/todo-lists", body:{ title }})
     }),
+    deleteTodolist: builder.mutation<BaseResponse, string>({
+      query: (id) => ({
+        method: "DELETE",
+        url: `/todo-lists/${id}`,
+      }),
+    }),
   }),
 })
 
-export const { useGetTodolistsQuery, useCreateTodolistMutation } = todolistsApi
+export const { useGetTodolistsQuery, useCreateTodolistMutation, useLazyGetTodolistsQuery} = todolistsApi
 
 export const _todolistsApi = {
   createTodolist(title: string) {

@@ -14,3 +14,4 @@ export const authApi = {
     return instance.get<BaseResponse<{id:number; email: string, login: string}>>("/auth/me")
   },
 }
+

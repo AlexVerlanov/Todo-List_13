@@ -45,7 +45,7 @@ export const Header = () => {
           <div>
             {isLoggedIn && (
               <>
-                <span style={{ marginRight: "15px" }}>{login}</span>
+                <span style={{ marginRight: "15px" }}>Привет, {login}👋</span>
                 <NavButton onClick={logoutHandler}>Logout</NavButton>
               </>
             )}
