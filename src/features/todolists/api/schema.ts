@@ -7,6 +7,7 @@ export const todolistSchema = z.object({
   title: z.string(),
   addedDate: z.string(),
   order: z.number(),
+  entityStatus: z.enum(['idle', 'loading', 'succeeded', 'failed']),
 })
 export const updateTaskModelSchema = z.object({
   description: z.string().nullable(),

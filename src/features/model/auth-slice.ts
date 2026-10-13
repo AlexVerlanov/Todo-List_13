@@ -104,7 +104,6 @@ export const authSlice = createAppsSlice({
             dispatch(changeStatusAC({status:'succeeded'}))
             const res = await authApi.me()
 
-            debugger
 
             // console.log(res)
             // console.log(res.data)
@@ -117,7 +116,6 @@ export const authSlice = createAppsSlice({
           }
 
         } catch (error:any) {
-          debugger
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
 

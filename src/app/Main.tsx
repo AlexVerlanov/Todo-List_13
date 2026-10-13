@@ -6,10 +6,10 @@ import { useCreateTodolistMutation } from "@/features/todolists/api/todolistsApi
 
 export const Main = () => {
 
-     const [trigger, res] = useCreateTodolistMutation()
+     const [createTodolist, res] = useCreateTodolistMutation()
   console.log(res)
-  const createTodolist = (title: string) => {
-    trigger(title)
+  const createTodolistHandler = (title: string) => {
+    createTodolist(title)
     // dispatch(createTodolistTC({ title }))
   }
 
@@ -31,7 +31,7 @@ export const Main = () => {
     <Container maxWidth={"lg"}>
       <Grid container sx={{ mb: "30px" }}>
         {/*Nein*/}
-        <CreateItemForm onCreateItem={createTodolist}  />
+        <CreateItemForm onCreateItem={createTodolistHandler}  />
       </Grid>
       <Grid container spacing={4}>
         <Todolists />
