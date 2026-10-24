@@ -1,4 +1,4 @@
-import { changeThemeModeAC, selectStatus, selectThemeMode } from "@/app/appSlice.ts"
+import { changeStatusAC, changeThemeModeAC, selectStatus, selectThemeMode } from "@/app/appSlice.ts"
 import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { containerSx } from "@/common/styles"
 import { getTheme } from "@/common/theme"
@@ -12,7 +12,11 @@ import Toolbar from "@mui/material/Toolbar"
 import { LinearProgress } from "@mui/material"
 import { Link as RouterLink } from "react-router"
 import { Path } from "@/common/routing/Routing.tsx"
-import { logoutTC, selectIsLoggedIn, selectLogin } from "@/features/model/auth-slice.ts"
+import { changeIsLoggedInAc, logoutTC, selectIsLoggedIn, selectLogin } from "@/features/model/auth-slice.ts"
+import { useLogoutMutation } from "@/features/auth/api/authApi.ts"
+import { ResultCodeObj } from "@/common/enums"
+import { AUTH_TOKEN } from "@/common/constants"
+import { clearDataAC } from "@/common/actions"
 
 export const Header = () => {
   const themeMode = useAppSelector(selectThemeMode)
@@ -25,6 +29,7 @@ export const Header = () => {
 
   const theme = getTheme(themeMode)
 
+const [logout] = useLogoutMutation()
 
   const changeMode = () => {
   let ac=   changeThemeModeAC({ themeMode: themeMode === "light" ? "dark" : "light" })
@@ -32,7 +37,17 @@ export const Header = () => {
   }
 
   const logoutHandler = () => {
-    dispatch(logoutTC())
+    logout()
+      .unwrap()
+      .then((data) => {
+        if (data.resultCode === ResultCodeObj.Success) {
+          localStorage.removeItem(AUTH_TOKEN)
+          dispatch(changeIsLoggedInAc({isLoggedIn: false}))
+        }
+      })
+      .catch((error) => {
+        console.error("Logout error:", error)
+      })
   }
 
   return (

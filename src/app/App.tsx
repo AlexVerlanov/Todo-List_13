@@ -4,29 +4,46 @@ import { useAppDispatch, useAppSelector } from "@/common/hooks"
 import { getTheme } from "@/common/theme"
 import CssBaseline from "@mui/material/CssBaseline"
 import { ThemeProvider } from "@mui/material/styles"
-import { selectThemeMode } from "@/app/appSlice.ts"
+import { changeStatusAC, selectThemeMode } from "@/app/appSlice.ts"
 import { ErrorSnackBar } from "@/common/components"
 import { Routing } from "@/common/routing"
 import { useEffect, useState } from "react"
-import { meTC } from "@/features/model/auth-slice.ts"
+import { changeIsLoggedInAc, meTC } from "@/features/model/auth-slice.ts"
 import { CircularProgress } from "@mui/material"
+import { authApi, useMeQuery } from "@/features/auth/api/authApi.ts"
+import { ResultCodeObj } from "@/common/enums"
 
 
 
 export const App = () => {
   const dispatch = useAppDispatch()
 
+  const {data,isLoading} = useMeQuery()
+  console.log(data)
+
+
   const themeMode = useAppSelector(selectThemeMode)
   const [isInitialized, setIsInitialized] = useState(false)
   const theme = getTheme(themeMode)
 
   useEffect(() => {
-    dispatch(meTC())
-      .unwrap()
-      .finally(()=>{
-        setIsInitialized(true)
-      })
-  }, [])
+    if (isLoading) return
+    if (data?.resultCode === ResultCodeObj.Success){
+      dispatch(changeIsLoggedInAc({isLoggedIn: true}))
+    }
+    setIsInitialized(true)
+    // isLoading()
+    // setIsInitialized(true)
+    // dispatch(changeIsLoggedInAc({isLoggedIn: true}))
+  }, [data,isLoading])
+
+  // useEffect(() => {
+  //   dispatch(meTC())
+  //     .unwrap()
+  //     .finally(()=>{
+  //       setIsInitialized(true)
+  //     })
+  // }, [])
 
 
   if (!isInitialized) {
@@ -35,8 +52,8 @@ export const App = () => {
           <CircularProgress size={150} thickness={3} />
         </div>
       )
-
   }
+
   return (
     <ThemeProvider theme={theme}>
       <div className={s.app}>

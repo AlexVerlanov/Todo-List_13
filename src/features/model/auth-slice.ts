@@ -32,6 +32,12 @@ export const authSlice = createAppsSlice({
   },
 
   reducers: (create) => ({
+
+    changeIsLoggedInAc:create.reducer<{isLoggedIn:boolean}>((state, action) => {
+    state.isLoggedIn = action.payload.isLoggedIn
+    }),
+
+
    loginTC: create.asyncThunk(
       async (args: LoginInputs, { rejectWithValue,dispatch }) => {
         try {
@@ -41,6 +47,7 @@ export const authSlice = createAppsSlice({
             dispatch(changeStatusAC({status:'succeeded'}))
             const token = res.data.data.token
             localStorage.setItem(AUTH_TOKEN, token)
+            dispatch(meTC())
                     return {isLoggedIn: true}
           }else {
             handleServerAppError(res.data, dispatch)
@@ -95,30 +102,26 @@ export const authSlice = createAppsSlice({
     ),
 
     meTC: create.asyncThunk(
-      async (_, { rejectWithValue,dispatch }) => {
+      async (_, { rejectWithValue, dispatch }) => {
         try {
-          dispatch(changeStatusAC({status:'loading'}))
-          // await new Promise(resolve => setTimeout(resolve, 3000))
+          dispatch(changeStatusAC({ status: "loading" }))
+
           const res = await authApi.me()
-          if (res.data.resultCode === ResultCodeObj.Success){
-            dispatch(changeStatusAC({status:'succeeded'}))
-            const res = await authApi.me()
 
+          if (res.data.resultCode === ResultCodeObj.Success) {
+            dispatch(changeStatusAC({ status: "succeeded" }))
 
-            // console.log(res)
-            // console.log(res.data)
-            // console.log(res.data.data)
-            return {isLoggedIn: true,  login: res.data.data.login,}
-
-          }else {
+            return {
+              isLoggedIn: true,
+              login: res.data.data.login,
+            }
+          } else {
             handleServerAppError(res.data, dispatch)
             return rejectWithValue(null)
           }
-
-        } catch (error:any) {
+        } catch (error: any) {
           handleServerNetworkError(error, dispatch)
           return rejectWithValue(null)
-
         }
       },
       {
@@ -136,7 +139,7 @@ export const authSlice = createAppsSlice({
 
 
 
-export const { loginTC,logoutTC,meTC} = authSlice.actions
+export const { loginTC,logoutTC,meTC,changeIsLoggedInAc} = authSlice.actions
 
 export const { selectIsLoggedIn,selectLogin  } = authSlice.selectors
 

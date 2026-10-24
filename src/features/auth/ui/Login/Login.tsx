@@ -8,14 +8,16 @@ import FormGroup from '@mui/material/FormGroup'
 import FormLabel from '@mui/material/FormLabel'
 import Grid from "@mui/material/Grid2"
 import TextField from '@mui/material/TextField'
-import { selectThemeMode } from "@/app/appSlice.ts"
+import { changeStatusAC, selectThemeMode } from "@/app/appSlice.ts"
 import { Controller, SubmitHandler, useForm } from "react-hook-form"
-
 import { zodResolver } from "@hookform/resolvers/zod"
 import { LoginInputs, loginSchema } from "@/features/auth/model/shema.ts"
-import { loginTC, meTC, selectIsLoggedIn } from "@/features/model/auth-slice.ts"
-import { Navigate, useNavigate } from "react-router"
-import { Path } from "@/common/routing/Routing.tsx"
+import { changeIsLoggedInAc, loginTC, meTC, selectIsLoggedIn } from "@/features/model/auth-slice.ts"
+import { useNavigate } from "react-router"
+import { useLoginMutation } from "@/features/auth/api/authApi.ts"
+import { ResultCodeObj } from "@/common/enums"
+import { AUTH_TOKEN } from "@/common/constants"
+import { clearDataAC } from "@/common/actions"
 
 
 
@@ -31,25 +33,35 @@ export const Login = () => {
 
   const theme = getTheme(themeMode)
 
+
+  const [login] = useLoginMutation()
+
   const { handleSubmit,formState:{errors},reset,control } =
-
-
-    useForm<LoginInputs>({
+   useForm<LoginInputs>({
       resolver: zodResolver(loginSchema),
       defaultValues: {
         email: "alexverlanov2020@gmail.com",
-        password: "123",
+        password: "",
         rememberMe: false,
       },
     })
 
 
   const onSubmit : SubmitHandler<LoginInputs> = (data) => {
-    dispatch(loginTC(data))
-      .unwrap()
-      .then(() => {
-        dispatch(meTC())
-      })
+
+    login(data).unwrap().then((data) => {
+      if (data.resultCode === ResultCodeObj.Success){
+        const token = data.data.token
+        localStorage.setItem(AUTH_TOKEN, token)
+        dispatch(changeIsLoggedInAc({isLoggedIn: true}))
+      }
+    })
+
+    // dispatch(loginTC(data))
+    //   .unwrap()
+    //   .then(() => {
+    //     dispatch(meTC())
+    //   })
 
   }
 
