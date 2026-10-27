@@ -45,9 +45,9 @@ const [logout] = useLogoutMutation()
           dispatch(changeIsLoggedInAc({isLoggedIn: false}))
         }
       })
-      .catch((error) => {
-        console.error("Logout error:", error)
-      })
+      // .catch((error) => {
+      //   console.error("Logout error:", error)
+      // })
   }
 
   return (
