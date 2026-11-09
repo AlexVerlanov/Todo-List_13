@@ -18,7 +18,7 @@ export type Task = {
 export type TasksState = Record<string, DomainTask[]>
 
 const initialState = {
-  isLoggedIn: false,
+  isLoggedIn: true,
   login: null as string | null,
 }
 // export const selectLogin = (state: RootState) => state.auth.login

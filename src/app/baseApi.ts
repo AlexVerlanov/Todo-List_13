@@ -15,7 +15,7 @@ export const baseApi = createApi({
       return headers
     },
   }),
-  tagTypes:['Todolists'],
+  tagTypes:['Todolists', 'Task'],
   reducerPath: "baseApi",
   endpoints :() =>( {}),
 })

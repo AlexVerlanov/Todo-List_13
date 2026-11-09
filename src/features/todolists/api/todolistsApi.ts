@@ -40,18 +40,18 @@ export const todolistsApi = baseApi.injectEndpoints({
     }),
 
     createTodolist: builder.mutation<BaseResponse<{ item: Todolist }>, string>({
-      query: (title) => ({ method: "post", url: "/todo-lists",
+      query: (title) => ({ method: "POST", url: "/todo-lists",
         body: { title } }),
     invalidatesTags:["Todolists"]
     }),
 
     deleteTodolist: builder.mutation<BaseResponse, string>({
-      query: (id) => ({ method: "delete", url: `/todo-lists/${id}` }),
+      query: (id) => ({ method: "DELETE", url: `/todo-lists/${id}` }),
       invalidatesTags:["Todolists"]
     }),
     changeTodolistTitle: builder.mutation<BaseResponse, {id:string, title:string}>({
       query: ({ id, title }) =>
-        ({ method: "put", url: `/todo-lists/${id}`,
+        ({ method: "PUT", url: `/todo-lists/${id}`,
         body: { id, title } }),
       invalidatesTags:["Todolists"]
     }),

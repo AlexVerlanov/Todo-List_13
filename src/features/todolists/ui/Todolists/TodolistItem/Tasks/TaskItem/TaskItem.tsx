@@ -1,60 +1,60 @@
 import { EditableSpan } from "@/common/components/EditableSpan/EditableSpan"
-import { useAppDispatch } from "@/common/hooks"
-import {
-  deleteTaskTC,
-  updateTaskTC,
-} from "@/features/todolists/model/tasks-slice.ts"
 import DeleteIcon from "@mui/icons-material/Delete"
 import Checkbox from "@mui/material/Checkbox"
 import IconButton from "@mui/material/IconButton"
 import ListItem from "@mui/material/ListItem"
 import type { ChangeEvent } from "react"
 import { getListItemSx } from "./TaskItem.styles"
-import { DomainTask } from "@/features/todolists/api/tasksApi.types.ts"
+import { DomainTask, UpdateTaskModel } from "@/features/todolists/api/tasksApi.types.ts"
 import { TaskStatus } from "@/common/enums"
 import { RequestStatus } from "@/common/types"
+import { useDeleteTaskMutation, useUpdateTaskMutation } from "@/features/todolists/api/_tasksApi.ts"
+import { DomainTodolist } from "@/features/todolists/model/todolists-slice.ts"
 
 type Props = {
   task: DomainTask
-  todolistId: string
+  todolist: DomainTodolist
   entityStatus: RequestStatus
 
 }
 
-export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
-  const dispatch = useAppDispatch()
+export const TaskItem = ({ task, todolist ,entityStatus }: Props) => {
 
-  const deleteTask = () => {
-    dispatch(deleteTaskTC({ todolistId, taskId: task.id }))
-  }
+  const [updateTask] = useUpdateTaskMutation()
+  const [deleteTaskMutation] = useDeleteTaskMutation()
+
 
   const changeTaskStatus = (e: ChangeEvent<HTMLInputElement>) => {
-    // const status = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
-    // const newTask = {...task, status}
-    dispatch(
-      updateTaskTC({
-        todolistId,
-        taskId: task.id,
-        domainModel: {
-          status: e.currentTarget.checked
-            ? TaskStatus.Completed
-            : TaskStatus.New,
-        },
-      }),
-    )
+
+    let status = e.currentTarget.checked ? TaskStatus.Completed : TaskStatus.New
+
+    const model: UpdateTaskModel = {
+      status,
+      title: task.title,
+      deadline: task.deadline,
+      description: task.description,
+      priority: task.priority,
+      startDate: task.startDate,
+    }
+    updateTask({ taskId: task.id, todolistId: todolist.id, model })
+
+  }
+  const changeTaskTitle = (title: string) => {
+    const model: UpdateTaskModel = {
+      status: task.status,
+      title,
+      deadline: task.deadline,
+      description: task.description,
+      priority: task.priority,
+      startDate: task.startDate,
+    }
+
+    updateTask({ taskId: task.id, todolistId: todolist.id, model })
   }
 
-  const changeTaskTitle = (title: string) => {
-    dispatch(
-      updateTaskTC({
-        todolistId,
-        taskId: task.id,
-        domainModel: {
-          title,
-        },
-      }),
-    )
-  }
+const  deleteTaskHandler   = () => {
+  deleteTaskMutation({ todolistId:todolist.id, taskId:task.id })
+}
 
   const checked = task.status === TaskStatus.Completed
   return (
@@ -64,7 +64,7 @@ export const TaskItem = ({ task, todolistId,entityStatus }: Props) => {
         <EditableSpan value={task.title} onChange={changeTaskTitle} />
         <span style={{fontSize:"12px", marginLeft: "10px",    color: "orange",}}>{new Date(task.addedDate).toLocaleDateString()}</span>
       </div>
-      <IconButton onClick={deleteTask} disabled={entityStatus === 'loading'}>
+      <IconButton onClick={deleteTaskHandler } disabled={entityStatus === 'loading'}>
         <DeleteIcon  />
       </IconButton>
     </ListItem>

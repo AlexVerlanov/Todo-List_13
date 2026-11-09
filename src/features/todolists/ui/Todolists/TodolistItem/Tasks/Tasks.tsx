@@ -1,37 +1,51 @@
-import { useAppDispatch, useAppSelector } from "@/common/hooks"
-
-
 import { TaskItem } from "./TaskItem/TaskItem"
 import List from "@mui/material/List"
 import { DomainTodolist } from "@/features/todolists/model/todolists-slice.ts"
-import { fetchTasks, selectFilteredTasks } from "@/features/todolists/model/tasks-slice.ts"
-import { useEffect } from "react"
-import { RequestStatus } from "@/common/types"
+import { useGetTasksQuery } from "@/features/todolists/api/_tasksApi.ts"
+import { TaskStatus } from "@/common/enums"
 
 type Props = {
   todolist: DomainTodolist
-  entityStatus: RequestStatus
+  // entityStatus: RequestStatus
 }
 
-export const Tasks = ({ todolist }: Props) => {
-  const { id,entityStatus  } = todolist
-    const dispatch = useAppDispatch()
+export const Tasks = ({ todolist}: Props) => {
+  const { id, entityStatus, filter } = todolist
 
-  useEffect(() => {
-    dispatch(fetchTasks(id))
-  }, [dispatch, id])
-  const filteredTasks = useAppSelector((state) =>
-    selectFilteredTasks(state, todolist.id, todolist.filter)
-  )
+   const { data, isLoading, isError } = useGetTasksQuery(id)
+  let filteredTasks = data?.items
 
+
+
+
+  if (filter === "active") {
+    filteredTasks = filteredTasks?.filter(
+      (task) => task.status === TaskStatus.New
+    )
+  }
+
+  if (filter === "completed") {
+    filteredTasks = filteredTasks?.filter(
+      (task) => task.status === TaskStatus.Completed
+    )
+  }
   return (
     <>
-      {filteredTasks.length === 0 ? (
+      {isLoading ? (
+        <p>Загрузка...</p>
+      ) : isError ? (
+        <p>Ошибка загрузки задач</p>
+      ) : filteredTasks?.length === 0 ? (
         <p>Тасок нет</p>
       ) : (
         <List>
-          {filteredTasks.map((task) => (
-            <TaskItem key={task.id} task={task} todolistId={todolist.id}  entityStatus={entityStatus}/>
+          {filteredTasks?.map((task) => (
+            <TaskItem
+              key={task.id}
+              task={task}
+              todolist={todolist}
+              entityStatus={entityStatus}
+            />
           ))}
         </List>
       )}
